@@ -27,19 +27,10 @@ import {delayWhen, filter, map, take, timeout} from 'rxjs/operators';
 export class AboutComponent implements OnInit {
 
   ngOnInit() {
-    document.addEventListener('click', evt => {
-      console.log({evt});
-      setTimeout(() => {
-        console.log(' ... finished');
-        let counter = 0;
-        setInterval(() => {
-          console.log({counter});
-          counter++;
-        }, 1000);
-      }, 3000);
-    })
-
-
+    const interval$ = timer(3000, 1000);
+    interval$.subscribe(val => console.log("stream 1 " + val));
+    const click$ = fromEvent(document, 'click');
+    click$.subscribe(evt => console.log(evt));
   }
 
 
