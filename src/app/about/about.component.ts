@@ -15,6 +15,7 @@ import {
   ReplaySubject, count
 } from 'rxjs';
 import {delayWhen, filter, map, take, timeout} from 'rxjs/operators';
+import {createHttpObservable} from "../common/util";
 
 // import {createHttpObservable} from '../common/util';
 
@@ -28,25 +29,15 @@ export class AboutComponent implements OnInit {
 
   ngOnInit() {
 
-    const http$ = Observable.create(
-     ( observer: any )=> {
-        fetch('/api/courses').then(response => {
-          return response.json();
-        }).then(body => {
-          observer.next(body);
-          observer.complete();
-        })
-          .catch(err => {
-            observer.error(err);
-          });
-      }
-    );
-
-    http$.subscribe(
-      (courses: any) => console.log(courses),
-      noop,
-      () => console.log('completed')
+    const http$ = createHttpObservable('/api/courses');
+    const courses$ = http$.pipe(
+      map((res: any) => res['payload'])
     )
+    courses$.subscribe(
+        (courses: any) => console.log(courses),
+        noop,
+        () => console.log('completed')
+      )
   }
 
 
