@@ -27,16 +27,26 @@ import {delayWhen, filter, map, take, timeout} from 'rxjs/operators';
 export class AboutComponent implements OnInit {
 
   ngOnInit() {
-    const interval$ = timer(3000, 1000);
-    const sub = interval$.subscribe(val => console.log("stream 1 " + val));
-    setTimeout(() => sub.unsubscribe(), 5000);
 
-    const click$ = fromEvent(document, 'click');
-    click$.subscribe(
-      evt => console.log(evt),
-      err => console.log(err),
-      () => console.log('completed')
+    const http$ = Observable.create(
+     ( observer: any )=> {
+        fetch('/api/courses').then(response => {
+          return response.json();
+        }).then(body => {
+          observer.next(body);
+          observer.complete();
+        })
+          .catch(err => {
+            observer.error(err);
+          });
+      }
     );
+
+    http$.subscribe(
+      (courses: any) => console.log(courses),
+      noop,
+      () => console.log('completed')
+    )
   }
 
 
